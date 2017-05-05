@@ -1,11 +1,9 @@
-function [ber] = BER (bits, mod, SNR)
+function [] = BER_pskmod_fskmod(bits, mod, SNR)
 switch(mod) %generating random sequence of bits
-    case 'OOK'
-        tx = bits;
-    case 'PRK'
-        tx = 2 * (bits) - 1;
+    case 'PSK'
+        tx = pskmod(bits, 2);
     case 'FSK'
-        tx = (1j - 1) * (bits) + 1;
+        tx = fskmod(bits, 2, 1, 2, 2);
 end
 Ptx = mean(abs(tx).^2); %computing power signal
 for i = 1 : length(SNR)
@@ -13,19 +11,17 @@ for i = 1 : length(SNR)
     noise = sqrt(Ptx / (2 * current_snr)) * ( randn(size(tx)) + 1j * randn(size(tx)) ); %simulating noise
     rx = tx + noise; %adding noise to signal
     switch (mod)
-        case 'OOK' 
-            drx = real(rx) >= 0.5;
-        case 'PRK'
-            drx = real(rx) >= 0;
+        case 'PSK'
+            drx = pskdemod(rx, 2);
         case 'FSK'
-            drx = (real(rx) - imag(rx)) < 0;
+            drx = fskdemod(rx, 2, 1, 2, 2);
     end
      %deciding whether 1 was sent or 0
     [numerr, ber(i)] = biterr(bits, drx); %computing ber
 end
 
 semilogy(SNR, ber); %plotting ber vs snr
-grid;
 xlabel('SNR (dB)');
 ylabel('Bit Error Rate');
 end
+

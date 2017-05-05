@@ -104,14 +104,24 @@ switch mod
         hold on;
         BER(handles.bits, 'PRK', handles.SNR);
         BER(handles.bits, 'FSK', handles.SNR);
-        legend('OOK','PRK','FSK')
+        legend('OOK','PRK','FSK');
         hold off;
     case 2
         BER(handles.bits, 'OOK', handles.SNR);
     case 3
         BER(handles.bits, 'PRK', handles.SNR);
+        hold on;
+        BER_pskmod_fskmod(handles.bits, 'PSK', handles.SNR);
+        legend('implemented', 'built-in');
+        hold off;
     case 4
         BER(handles.bits, 'FSK', handles.SNR);
+        hold on;
+        BER_pskmod_fskmod(handles.bits, 'FSK', handles.SNR);
+        legend('implemented', 'built-in');
+        hold off;
+    case 5
+        BER_16QAM(handles.bits, handles.SNR);
 end
 
 
